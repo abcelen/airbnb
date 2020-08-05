@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Readwell</title>
+    <title>AirBnb</title>
     <style>
       body {
         font-family: Georgia, serif;
@@ -63,6 +63,7 @@
     </div>
 
     <script>
+      var api = "http://localhost:3000";
       function showResults(results) {
         const resultsNode = document.getElementById("results");
         resultsNode.innerHTML = "result";
@@ -110,7 +111,7 @@
           queryString = queryString + "to=" + priceto_value;
         }
 
-        fetch("/api/search?" + queryString)
+        fetch("/api/search/room?" + queryString)
           .then((response) => response.json())
           .then((json) => showResults(json));
       }

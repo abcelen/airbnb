@@ -1,10 +1,12 @@
 const express = require("express");
 const mongodb = require("mongodb");
-require("dotenv").config();
+const dotenv = require("dotenv");
+dotenv.config();
 
 const app = express();
-//app.use(express);
+app.use(express.json());
 
+const PORT = process.env.PORT || 3000;
 const uri = process.env.DATABASE_URI;
 const client = new mongodb.MongoClient(uri, { useUnifiedTopology: true });
 
@@ -13,9 +15,7 @@ client.connect(function () {
   const collection = db.collection("listingsAndReviews");
 
   app.get("/", (req, res) => {
-    res.send(
-      "<h2>please browse below end points</h2><ul><li>/search/room <h4>name= or summary=</h4></li><li>/search/price<h4>from= or to=</h4></li><ul>"
-    );
+    res.send("<h2>You can search the rooms now!</h2>");
   });
 
   app.get("/search/room", (req, res, next) => {
@@ -24,13 +24,9 @@ client.connect(function () {
       (name === undefined || name === "") &&
       (summary === undefined || summary === "")
     ) {
-      //res.send(`please specify name or summery in your query parameter`);
+
       return next(`please specify name or summery in your query parameter`);
     }
-
-    //this searchObject accept name or summary
-    // the search parameters based on regex and would fine any record that has the string inside
-    //the regex rule find a word that match to query not characters inside a word.
 
     const searchObject =
       (name !== undefined && {
@@ -40,9 +36,7 @@ client.connect(function () {
         summary: new RegExp(` ${summary} `),
       });
 
-    // const searchObject =
-    //   (name !== undefined && { name: new RegExp(name) }) ||
-    //   (summary !== undefined && { summary: new RegExp(summary) });
+
     console.log("");
     console.log(searchObject);
 
@@ -52,7 +46,7 @@ client.connect(function () {
   });
 
   app.get("/search/price", (req, res, next) => {
-    //Queries : from : price from , to : price to
+  
     const { from, to } = req.query;
 
     if (
@@ -71,7 +65,7 @@ client.connect(function () {
       },
     };
 
-    console.log("");
+
     console.log(searchObject);
 
     collection.find(searchObject).toArray(function (error, data) {
@@ -79,7 +73,5 @@ client.connect(function () {
     });
   });
 });
-
-const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => console.log(`server started on port ${PORT}`));
